@@ -1,0 +1,29 @@
+{
+  "name": "configsync-hub",
+  "version": "0.2.3",
+  "description": "Obsidian 跨 Vault 配置同步插件",
+  "main": "main.js",
+  "scripts": {
+    "dev": "node esbuild.config.mjs",
+    "lint": "node scripts/lint.mjs",
+    "build": "npm run lint && tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
+    "typecheck": "tsc -noEmit -skipLibCheck",
+    "test": "tsc -p tsconfig.test.json && node --test .tmp-test/tests/*.test.js",
+    "install:vault": "node scripts/install.mjs"
+  },
+  "keywords": [
+    "obsidian",
+    "obsidian-plugin",
+    "configsync-hub"
+  ],
+  "author": "silence-lei",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.7.5",
+    "builtin-modules": "3.3.0",
+    "esbuild": "0.21.5",
+    "obsidian": "latest",
+    "tslib": "2.7.0",
+    "typescript": "4.9.5"
+  }
+}

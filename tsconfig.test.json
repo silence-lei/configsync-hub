@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "noEmit": false,
+    "outDir": ".tmp-test",
+    "sourceMap": false,
+    "inlineSourceMap": false,
+    "inlineSources": false,
+    "importHelpers": false,
+    "isolatedModules": false,
+    "types": ["node"]
+  },
+  "include": ["src/core/**/*.ts", "tests/**/*.ts"]
+}

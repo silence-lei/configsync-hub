@@ -1,0 +1,125 @@
+/* ConfigSync 设置页样式（全部使用 Obsidian 主题变量，自动适配明暗主题） */
+
+.configsync-hub-settings .configsync-hub-nav {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	margin-bottom: 14px;
+	padding-bottom: 10px;
+	border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.configsync-hub-settings .configsync-hub-nav button {
+	padding: 4px 12px;
+	border-radius: 6px;
+	border: 1px solid var(--background-modifier-border);
+	background: var(--background-secondary);
+	cursor: pointer;
+}
+
+.configsync-hub-settings .configsync-hub-nav button.is-active {
+	background: var(--interactive-accent);
+	color: var(--text-on-accent);
+	border-color: var(--interactive-accent);
+}
+
+.configsync-hub-health-box {
+	margin: 8px 0 16px;
+	padding: 10px 12px;
+	border-radius: 8px;
+	border: 1px solid var(--background-modifier-border);
+	background: var(--background-secondary);
+}
+
+.configsync-hub-health-box.is-error {
+	border-color: var(--text-error);
+}
+
+.configsync-hub-health-box.is-warn {
+	border-color: var(--text-warning);
+}
+
+.configsync-hub-muted {
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+}
+
+.configsync-hub-error {
+	color: var(--text-error);
+	word-break: break-all;
+}
+
+.configsync-hub-dim {
+	opacity: 0.55;
+}
+
+.configsync-hub-preview {
+	max-height: 45vh;
+	overflow: auto;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 6px;
+	padding: 8px 12px;
+	margin-bottom: 12px;
+}
+
+.configsync-hub-preview ul {
+	margin: 4px 0 8px 16px;
+}
+
+.configsync-hub-create {
+	color: var(--text-success);
+}
+
+.configsync-hub-update {
+	color: var(--text-accent);
+}
+
+.configsync-hub-delete {
+	color: var(--text-error);
+}
+
+.configsync-hub-settings .configsync-hub-textarea textarea {
+	width: 100%;
+	min-height: 90px;
+	font-family: var(--font-monospace);
+	font-size: var(--font-ui-smaller);
+}
+
+.configsync-hub-vault-list,
+.configsync-hub-backup-list,
+.configsync-hub-plugin-list,
+.configsync-hub-remote-list {
+	border-top: 1px solid var(--background-modifier-border);
+	padding-top: 8px;
+}
+
+/* 插件清单：缩进显示，表明它属于上面的「社区插件本体」，太长时内部滚动 */
+.configsync-hub-plugin-list {
+	margin: 0 0 8px 18px;
+	padding-left: 12px;
+	border-left: 2px solid var(--background-modifier-border);
+	max-height: 420px;
+	overflow-y: auto;
+}
+
+.configsync-hub-plugin-list .setting-item {
+	padding-top: 6px;
+	padding-bottom: 6px;
+}
+
+.configsync-hub-plugin-heading .setting-item-control {
+	flex-wrap: wrap;
+	gap: 4px;
+}
+
+.configsync-hub-notice {
+	cursor: pointer;
+}
+
+.configsync-hub-version {
+	color: var(--text-faint);
+	font-size: var(--font-ui-smaller);
+	text-align: right;
+	margin-top: 16px;
+	user-select: text;
+}

@@ -1,0 +1,9 @@
+node_modules/
+main.js
+*.js.map
+.tmp-test/
+.DS_Store
+data.json
+
+# 本地工作笔记（含本机 vault 路径，不进公开仓库）
+.workbuddy/

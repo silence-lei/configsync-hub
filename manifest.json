@@ -1,0 +1,10 @@
+{
+  "id": "configsync-hub",
+  "name": "ConfigSync Hub",
+  "version": "0.2.3",
+  "minAppVersion": "1.4.0",
+  "description": "跨 Vault 同步配置：一次配置，多库生效。Sync plugins, themes, CSS snippets, hotkeys and settings from one central hub.",
+  "author": "silence-lei",
+  "authorUrl": "https://github.com/silence-lei",
+  "isDesktopOnly": true
+}
