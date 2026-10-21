@@ -4,6 +4,8 @@
 
 > 对应需求文档：《ConfigSync — Obsidian 跨 Vault 配置同步插件》需求文档 v1.0
 > 当前实现范围：v0.1（MVP）+ 部分 v0.5 特性，见文末「实现范围」。
+>
+> 仓库：<https://github.com/silence-lei/configsync-hub> ｜ 下载：[Releases](https://github.com/silence-lei/configsync-hub/releases)
 
 ---
 
@@ -13,7 +15,7 @@
 `设置 → 第三方插件 → 社区插件市场 → 搜索 "ConfigSync Hub" → 安装并启用`。
 
 **方式二：手动安装**
-从 Releases 下载 `main.js`、`manifest.json`、`styles.css`，放进 `<vault>/.obsidian/plugins/configsync-hub/`，重启 Obsidian 后启用。
+从 [Releases](https://github.com/silence-lei/configsync-hub/releases) 下载最新的 `main.js`、`manifest.json`、`styles.css`，放进 `<vault>/.obsidian/plugins/configsync-hub/`，重启 Obsidian 后启用。
 
 **方式三：BRAT**
 装好 [BRAT](https://github.com/TfTHacker/obsidian42-brat)，用 `Add beta plugin` 填 `silence-lei/configsync-hub`。
