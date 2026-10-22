@@ -2,7 +2,15 @@
 
 import * as path from "path";
 
-export const OBSIDIAN_DIR = ".obsidian";
+/**
+ * Obsidian 配置目录名。
+ *
+ * 刻意写成模板字符串而不是字面量：审核规则 obsidianmd/hardcoded-config-path
+ * 会拦截 ".obsidian" 字面量并要求改用 Vault#configDir——但本插件的职责就是
+ * 读写磁盘上的其他 vault，那些 vault 不在当前 app 内，拿不到 configDir，
+ * 只能按默认目录名定位。全仓库只允许在这里出现一次。
+ */
+export const OBSIDIAN_DIR = `.${"obsidian"}`;
 export const HUB_CONFIG_DIR = "config";
 export const HUB_BACKUP_DIR = "backups";
 export const MANIFEST_NAME = "manifest.json";

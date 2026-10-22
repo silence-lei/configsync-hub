@@ -24,7 +24,7 @@ function pickViaInput(directory: boolean, accept?: string): Promise<string | nul
 			input.setAttribute("directory", "");
 		}
 		if (accept) input.accept = accept;
-		input.style.display = "none";
+		input.addClass("configsync-hub-hidden-input");
 
 		let settled = false;
 		const finish = (value: string | null): void => {

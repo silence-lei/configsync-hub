@@ -15,7 +15,7 @@ let zlibCache: Zlib | null | undefined;
 function getZlib(): Zlib | null {
 	if (zlibCache !== undefined) return zlibCache;
 	try {
-		// eslint-disable-next-line @typescript-eslint/no-var-requires
+		// eslint-disable-next-line @typescript-eslint/no-var-requires -- 打包产物是 CJS，动态 require zlib 以启用 deflate 压缩，不可用时回退 store 模式
 		zlibCache = require("zlib") as Zlib;
 	} catch {
 		zlibCache = null;

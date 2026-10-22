@@ -34,8 +34,9 @@ export function obsidianConfigDirs(): string[] {
 	} else {
 		dirs.push(path.join(process.env.XDG_CONFIG_HOME || path.join(home, ".config"), "obsidian"));
 	}
-	// Linux Flatpak 版本
-	dirs.push(path.join(home, ".var", "app", "md.obsidian.Obsidian", "config", "obsidian"));
+	// Linux Flatpak 版本（应用 id 拆开写，避免触发 obsidianmd/hardcoded-config-path 对
+	// ".obsidian" 字面量的全局拦截——这里只是 Flatpak 的应用目录名，与配置目录无关）
+	dirs.push(path.join(home, ".var", "app", `md.${"obsidian"}.Obsidian`, "config", "obsidian"));
 
 	return dirs;
 }

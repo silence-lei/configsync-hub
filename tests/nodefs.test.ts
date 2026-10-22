@@ -1,7 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, existsSync } from "node:fs";
-import { tmpdir } from "node:os";
 import * as path from "node:path";
 
 import { nodeFs } from "../src/platform/nodeFs";
@@ -13,7 +12,9 @@ import { NullLogger } from "../src/core/logger";
 
 /** 用真实磁盘跑一遍完整流程，验证 nodeFs 与路径处理 */
 test("真实文件系统端到端：初始化 Hub → 同步 → 备份", async () => {
-	const root = mkdtempSync(path.join(tmpdir(), "configsync-hub-"));
+	// 临时目录放在编译输出目录下（.tmp-test 已在 .gitignore），不依赖系统 tmpdir 的删除权限
+	mkdirSync(path.join(__dirname, "..", ".tmp-test"), { recursive: true });
+	const root = mkdtempSync(path.join(__dirname, "..", ".tmp-test", "e2e-"));
 	try {
 		const source = path.join(root, "master");
 		const target = path.join(root, "notes");

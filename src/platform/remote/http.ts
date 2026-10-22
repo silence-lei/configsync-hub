@@ -30,7 +30,7 @@ async function globalFetch(): Promise<typeof fetch | null> {
 		/* ignore */
 	}
 	try {
-		// eslint-disable-next-line @typescript-eslint/no-var-requires
+		// eslint-disable-next-line @typescript-eslint/no-var-requires -- 打包为 CJS 后需在运行时动态取 undici；取不到时回退全局 fetch，两者都缺才报错
 		const undici = require("undici") as { fetch?: typeof fetch } | undefined;
 		if (undici?.fetch) return undici.fetch as typeof fetch;
 	} catch {

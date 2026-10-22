@@ -30,7 +30,7 @@ export interface TokenResult {
 
 function randomString(bytes = 32): string {
 	try {
-		// eslint-disable-next-line @typescript-eslint/no-var-requires
+		// eslint-disable-next-line @typescript-eslint/no-var-requires -- 打包为 CJS 后需在运行时动态取 Node 模块；均包 try/catch 降级，缺失时走纯 JS 兜底
 		const crypto = require("crypto") as { randomBytes: (n: number) => Buffer };
 		return crypto.randomBytes(bytes).toString("base64url");
 	} catch {
@@ -41,7 +41,7 @@ function randomString(bytes = 32): string {
 }
 
 function sha256Base64Url(input: string): string {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	// eslint-disable-next-line @typescript-eslint/no-var-requires -- 打包为 CJS 后需在运行时动态取 Node 模块；均包 try/catch 降级，缺失时走纯 JS 兜底
 	const crypto = require("crypto") as {
 		createHash: (alg: string) => { update: (d: Buffer) => { digest: (enc: string) => string }; digest: (enc: string) => string };
 	};
@@ -54,7 +54,7 @@ function basicHeader(clientId: string, clientSecret?: string): string {
 
 function openBrowser(url: string): void {
 	try {
-		// eslint-disable-next-line @typescript-eslint/no-var-requires
+		// eslint-disable-next-line @typescript-eslint/no-var-requires -- 打包为 CJS 后需在运行时动态取 Node 模块；均包 try/catch 降级，缺失时走纯 JS 兜底
 		const electron = require("electron") as { shell?: { openExternal?: (u: string) => void } };
 		if (electron?.shell?.openExternal) {
 			electron.shell.openExternal(url);
@@ -64,7 +64,7 @@ function openBrowser(url: string): void {
 		/* 忽略 */
 	}
 	try {
-		// eslint-disable-next-line @typescript-eslint/no-var-requires
+		// eslint-disable-next-line @typescript-eslint/no-var-requires -- 打包为 CJS 后需在运行时动态取 Node 模块；均包 try/catch 降级，缺失时走纯 JS 兜底
 		const cp = require("child_process") as { execFile: (c: string, a: string[]) => void };
 		const cmd = process.platform === "darwin" ? "open" : process.platform === "win32" ? "cmd" : "xdg-open";
 		const args = cmd === "cmd" ? ["/c", "start", "", url] : [url];
@@ -117,7 +117,7 @@ export async function authorize(client: OAuthClient): Promise<TokenResult> {
 	}
 	const url = `${client.authorizeUrl}?${params.toString()}`;
 
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	// eslint-disable-next-line @typescript-eslint/no-var-requires -- 打包为 CJS 后需在运行时动态取 Node 模块；均包 try/catch 降级，缺失时走纯 JS 兜底
 	const httpMod = require("http") as typeof import("http");
 	const code = await new Promise<string>((resolve, reject) => {
 		const server = httpMod.createServer((req, res) => {

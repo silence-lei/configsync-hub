@@ -1,5 +1,11 @@
 /* ConfigSync 设置页样式（全部使用 Obsidian 主题变量，自动适配明暗主题） */
 
+/* 目录选择器的隐藏 <input> 兜底（用 class 替代内联样式） */
+.configsync-hub-hidden-input {
+	display: none;
+}
+
+
 .configsync-hub-settings .configsync-hub-nav {
 	display: flex;
 	flex-wrap: wrap;

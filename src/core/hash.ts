@@ -14,7 +14,7 @@ let nodeCrypto: NodeCrypto | null | undefined;
 function getNodeCrypto(): NodeCrypto | null {
 	if (nodeCrypto !== undefined) return nodeCrypto;
 	try {
-		// eslint-disable-next-line @typescript-eslint/no-var-requires
+		// eslint-disable-next-line @typescript-eslint/no-var-requires -- 打包产物是 CJS，渲染进程里需动态 require Node 的 crypto 做哈希加速，缺失时回退纯 TS 实现
 		nodeCrypto = require("crypto") as NodeCrypto;
 	} catch {
 		nodeCrypto = null;

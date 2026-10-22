@@ -24,7 +24,6 @@ export function isDebugEnabled(): boolean {
 	}
 }
 
-/* eslint-disable no-console */
 export function debugLog(...args: unknown[]): void {
 	if (!isDebugEnabled()) return;
 	console.debug(PREFIX, ...args);
@@ -34,4 +33,3 @@ export function debugWarn(...args: unknown[]): void {
 	if (!isDebugEnabled()) return;
 	console.warn(PREFIX, ...args);
 }
-/* eslint-enable no-console */

@@ -7,7 +7,7 @@
 
 import * as path from "path";
 import { existsSync, readdirSync, statSync } from "fs";
-import { Notice, Platform, Plugin } from "obsidian";
+import { moment, Notice, Platform, Plugin } from "obsidian";
 
 import { ConfigSyncSettings, defaultSettings, PluginInventoryItem, RemoteConfig, SETTINGS_SCHEMA_VERSION, VaultTarget } from "./core/types";
 import { FsApi } from "./core/fs";
@@ -129,9 +129,10 @@ export default class ConfigSyncPlugin extends Plugin {
 	}
 
 	private appLocale(): string {
+		// 用 Obsidian 已设置的 moment 区域判断界面语言，避免直接读 localStorage
 		try {
-			const stored = window.localStorage.getItem("language");
-			if (stored) return stored;
+			const lang = moment.locale();
+			if (lang) return lang;
 		} catch {
 			/* 忽略 */
 		}
@@ -217,8 +218,11 @@ export default class ConfigSyncPlugin extends Plugin {
 			id: "open-settings",
 			name: t()("cmd.openSettings"),
 			callback: () => {
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				const setting = (this.app as unknown as { setting: any }).setting;
+				const setting = (
+					this.app as unknown as {
+						setting?: { open?: () => void; openTabById?: (id: string) => void };
+					}
+				).setting;
 				setting?.open?.();
 				setting?.openTabById?.(this.manifest.id);
 			},

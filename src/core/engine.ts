@@ -7,7 +7,7 @@
 import * as path from "path";
 import { FsApi, readJson, writeJson } from "./fs";
 import { sha256 } from "./hash";
-import { hubBackupDir, hubConfigDir, relToAbs, SELF_DIR_LIST, vaultConfigDir, vaultStatePath } from "./paths";
+import { hubBackupDir, hubConfigDir, OBSIDIAN_DIR, relToAbs, SELF_DIR_LIST, vaultConfigDir, vaultStatePath } from "./paths";
 import { createManifest, loadHubManifest, manifestToMap, saveHubManifest } from "./manifest";
 import { LocalFileInfo, PlanSummary, planVault, VaultPlan } from "./planner";
 import { createVaultBackup, pruneBackups } from "./backup";
@@ -189,7 +189,7 @@ export async function planSync(
 				vaultName: target.name,
 				changes: [],
 				summary: { create: 0, update: 0, delete: 0, skip: 0, bytes: 0 },
-				error: "目录不存在或不是 Obsidian vault（缺少 .obsidian）",
+				error: `目录不存在或不是 Obsidian vault（缺少 ${OBSIDIAN_DIR}）`,
 			});
 			continue;
 		}

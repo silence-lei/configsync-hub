@@ -35,7 +35,7 @@ interface ElectronDialogApi {
 /** 当前平台，取不到时返回 "other" */
 export function platformKind(): "darwin" | "win32" | "linux" | "other" {
 	try {
-		// eslint-disable-next-line @typescript-eslint/no-var-requires
+		// eslint-disable-next-line @typescript-eslint/no-var-requires -- 打包为 CJS 后需在运行时动态取 Node/Electron 模块；均包 try/catch 降级，缺失时走下一级方案
 		const p = (require("process") as { platform?: string }).platform;
 		if (p === "darwin" || p === "win32" || p === "linux") return p;
 	} catch {
@@ -47,7 +47,7 @@ export function platformKind(): "darwin" | "win32" | "linux" | "other" {
 /** 判断某个可执行文件是否存在（Linux 下用于探测 zenity / kdialog） */
 function hasBinary(name: string): boolean {
 	try {
-		// eslint-disable-next-line @typescript-eslint/no-var-requires
+		// eslint-disable-next-line @typescript-eslint/no-var-requires -- 打包为 CJS 后需在运行时动态取 Node/Electron 模块；均包 try/catch 降级，缺失时走下一级方案
 		const fs = require("fs") as { existsSync: (p: string) => boolean };
 		return fs.existsSync(`/usr/bin/${name}`) || fs.existsSync(`/usr/local/bin/${name}`);
 	} catch {
@@ -130,7 +130,7 @@ export function pickViaShell(opts: ShellPickOptions): Promise<string | null | un
 			resolve(v);
 		};
 		try {
-			// eslint-disable-next-line @typescript-eslint/no-var-requires
+			// eslint-disable-next-line @typescript-eslint/no-var-requires -- 打包为 CJS 后需在运行时动态取 Node/Electron 模块；均包 try/catch 降级，缺失时走下一级方案
 			const cp = require("child_process") as {
 				spawn: (
 					c: string,
@@ -166,7 +166,7 @@ export function pathForFile(file: File): string | null {
 	const direct = (file as File & { path?: string }).path;
 	if (direct) return direct;
 	try {
-		// eslint-disable-next-line @typescript-eslint/no-var-requires
+		// eslint-disable-next-line @typescript-eslint/no-var-requires -- 打包为 CJS 后需在运行时动态取 Node/Electron 模块；均包 try/catch 降级，缺失时走下一级方案
 		const electron = require("electron") as { webUtils?: { getPathForFile?: (f: File) => string } };
 		const p = electron?.webUtils?.getPathForFile?.(file);
 		if (p) return p;
@@ -179,7 +179,7 @@ export function pathForFile(file: File): string | null {
 /** 尽力在系统文件管理器中显示路径，失败时返回 false 由调用方降级 */
 export function revealInFileManager(target: string): boolean {
 	try {
-		// eslint-disable-next-line @typescript-eslint/no-var-requires
+		// eslint-disable-next-line @typescript-eslint/no-var-requires -- 打包为 CJS 后需在运行时动态取 Node/Electron 模块；均包 try/catch 降级，缺失时走下一级方案
 		const electron = require("electron") as { shell?: { showItemInFolder?: (p: string) => void; openPath?: (p: string) => void } };
 		const shell = electron?.shell;
 		if (shell?.showItemInFolder) {
