@@ -5,7 +5,7 @@ import * as path from "node:path";
 import { MemoryFs } from "./memoryFs";
 import { defaultSettings } from "../src/core/types";
 import { buildRuleSet } from "../src/core/rules";
-import { applyPlan, planSync, pushToHub, checkHub, vaultStatus } from "../src/core/engine";
+import { applyPlan, planSync, pushToHub, checkHub, vaultStatus, readVaultState, markVaultSynced } from "../src/core/engine";
 import { listBackups, restoreBackup } from "../src/core/backup";
 import { readZip } from "../src/core/zip";
 import { NullLogger } from "../src/core/logger";
@@ -200,6 +200,55 @@ test("Dry-run 不写入任何文件", async () => {
 	const report = await applyPlan(fs, plan, { hubPath: HUB, backup: s.backup, dryRun: true, rules, logger: new NullLogger() });
 	assert.equal(report.results[0].status, "dry-run");
 	assert.equal(fs.has(path.join(TARGET, ".obsidian/plugins/dataview/main.js")), false);
+});
+
+test("源库推送到 Hub 后，本库不应再被判定为落后（启动提醒不重复）", async () => {
+	const fs = new MemoryFs();
+	seedSource(fs);
+	seedTarget(fs);
+	const s = makeSettings();
+	const rules = buildRuleSet(s);
+
+	// 推送前：源库还没有任何同步记录
+	assert.equal((await readVaultState(fs, SOURCE)).lastSyncVersion, undefined);
+
+	const push = await pushToHub(fs, { hubPath: HUB, sourceVaultPath: SOURCE, rules, sourceVaultName: "master" }, new NullLogger());
+	await markVaultSynced(fs, { vaultPath: SOURCE, configVersion: push.configVersion });
+
+	const health = await checkHub(fs, HUB);
+	assert.equal(health.ok, true);
+	const hubVersion = health.manifest?.configVersion ?? "";
+
+	// 启动检查的第一个条件：本库已记录在这一版上 → 不提醒
+	const state = await readVaultState(fs, SOURCE);
+	assert.equal(state.lastSyncVersion, hubVersion, "推送后源库自身必须被标记为该版本");
+
+	// 再推送一次，版本推进后状态也被推进
+	fs.seed(path.join(SOURCE, ".obsidian/hotkeys.json"), JSON.stringify({ a: 2 }));
+	const push2 = await pushToHub(fs, { hubPath: HUB, sourceVaultPath: SOURCE, rules, sourceVaultName: "master" }, new NullLogger());
+	await markVaultSynced(fs, { vaultPath: SOURCE, configVersion: push2.configVersion });
+	assert.notEqual(push2.configVersion, push.configVersion);
+	assert.equal((await readVaultState(fs, SOURCE)).lastSyncVersion, push2.configVersion);
+
+	// 未被标记的目标库仍然应被判定为落后
+	const plan = await planSync(fs, { hubPath: HUB, targets: s.targets, rules, prune: false }, new NullLogger());
+	assert.equal(await vaultStatus(fs, TARGET, plan), "behind");
+});
+
+test("目标库拉取后记录版本，再次检查为一致", async () => {
+	const fs = new MemoryFs();
+	seedSource(fs);
+	seedTarget(fs);
+	const s = makeSettings();
+	const rules = buildRuleSet(s);
+	await pushToHub(fs, { hubPath: HUB, sourceVaultPath: SOURCE, rules, sourceVaultName: "master" }, new NullLogger());
+
+	const plan = await planSync(fs, { hubPath: HUB, targets: s.targets, rules, prune: false }, new NullLogger());
+	await applyPlan(fs, plan, { hubPath: HUB, backup: s.backup, dryRun: false, rules, logger: new NullLogger() });
+
+	const health = await checkHub(fs, HUB);
+	assert.equal((await readVaultState(fs, TARGET)).lastSyncVersion, health.manifest?.configVersion);
+	assert.equal(await vaultStatus(fs, TARGET, await planSync(fs, { hubPath: HUB, targets: s.targets, rules, prune: false }, new NullLogger())), "consistent");
 });
 
 test("Hub 健康检查", async () => {

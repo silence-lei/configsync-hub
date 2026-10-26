@@ -377,6 +377,34 @@ async function updateVaultState(fs: FsApi, vaultPath: string, vp: VaultPlan, pla
 	}
 }
 
+/** 读取某个 vault 的同步状态（不存在时返回空状态） */
+export async function readVaultState(fs: FsApi, vaultPath: string): Promise<VaultSyncState> {
+	return (await readJson<VaultSyncState>(fs, vaultStatePath(vaultPath))) ?? { fileFingerprints: {} };
+}
+
+/**
+ * 把某个 vault 标记为「已处于指定版本」。
+ *
+ * 用于当前库推送到 Hub 之后：源库本身就是这一版的来源，如果不更新它自己的
+ * state.json，启动检查会拿「Hub 版本 > 本库记录版本」判定本库落后并反复弹提醒。
+ */
+export async function markVaultSynced(
+	fs: FsApi,
+	opts: { vaultPath: string; configVersion: string },
+	logger: Logger = new NullLogger()
+): Promise<void> {
+	const statePath = vaultStatePath(opts.vaultPath);
+	const state = await readVaultState(fs, opts.vaultPath);
+	state.lastSyncAt = new Date().toISOString();
+	state.lastSyncVersion = opts.configVersion;
+	try {
+		await fs.mkdirp(path.dirname(statePath));
+		await writeJson(fs, statePath, state);
+	} catch (e) {
+		logger.warn(`写入状态文件失败 ${statePath}: ${String(e)}`);
+	}
+}
+
 /* --------------------------- Hub 健康检查 --------------------------- */
 
 export interface HubHealth {

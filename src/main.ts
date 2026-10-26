@@ -12,7 +12,7 @@ import { moment, Notice, Platform, Plugin } from "obsidian";
 import { ConfigSyncSettings, defaultSettings, PluginInventoryItem, RemoteConfig, SETTINGS_SCHEMA_VERSION, VaultTarget } from "./core/types";
 import { FsApi } from "./core/fs";
 import { RuleSet, buildRuleSet } from "./core/rules";
-import { SyncPlan, applyPlan, checkHub, planSync, pushToHub, SyncReport, VaultSyncStatus } from "./core/engine";
+import { SyncPlan, applyPlan, checkHub, markVaultSynced, planSync, pushToHub, readVaultState, SyncReport, VaultSyncStatus } from "./core/engine";
 import {
 	BackupInfo,
 	createVaultBackup,
@@ -285,6 +285,11 @@ export default class ConfigSyncPlugin extends Plugin {
 				this.logger
 			);
 			new Notice(this.t("notice.hubInit", { version: res.configVersion }));
+			// 源库本身就是这一版的来源，必须同步更新它自己的 state.json，
+			// 否则启动检查会认为它「落后」于自己刚推上去的版本并反复提醒
+			await markVaultSynced(this.fs, { vaultPath, configVersion: res.configVersion }, this.logger);
+			this.settings.updateNotifiedVersion = res.configVersion;
+			await this.saveSettings();
 			this.invalidateStatus();
 			this.refreshSettingsView();
 		} catch (e) {
@@ -306,6 +311,9 @@ export default class ConfigSyncPlugin extends Plugin {
 				this.logger
 			);
 			new Notice(this.t("notice.pushed", { version: res.configVersion }));
+			await markVaultSynced(this.fs, { vaultPath, configVersion: res.configVersion }, this.logger);
+			this.settings.updateNotifiedVersion = res.configVersion;
+			await this.saveSettings();
 			this.lastConfigSignature = this.configSignature(vaultPath);
 			this.invalidateStatus();
 			this.refreshSettingsView();
@@ -757,6 +765,17 @@ export default class ConfigSyncPlugin extends Plugin {
 			if (!health.ok) return;
 			const vaultPath = this.currentVaultPath;
 			if (!vaultPath) return;
+
+			// 本库已经记录在这一版上（通常就是本库推上去的）→ 不算落后
+			const state = await readVaultState(this.fs, vaultPath);
+			const hubVersion = health.manifest?.configVersion ?? "";
+			if (hubVersion && state.lastSyncVersion === hubVersion) return;
+			// Hub 最后一版就是本库推上去的 → 不提醒本库去拉取自己推的内容
+			const vaultName = this.platform.getCurrentVaultName();
+			if (vaultName && health.manifest?.sourceVault && health.manifest.sourceVault === vaultName) return;
+			// 同一个版本只提醒一次：用户忽略或同步失败都不再反复弹
+			if (hubVersion && this.settings.updateNotifiedVersion === hubVersion) return;
+
 			const plan = await planSync(
 				this.fs,
 				{
@@ -777,6 +796,10 @@ export default class ConfigSyncPlugin extends Plugin {
 				notice.hide();
 				void this.pullToCurrentVault();
 			});
+
+			// 记住已经提醒过这一版，下次启动不再重复
+			this.settings.updateNotifiedVersion = plan.configVersion;
+			await this.saveSettings();
 		} catch {
 			/* 启动检查失败不打扰用户 */
 		}

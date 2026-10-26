@@ -159,6 +159,8 @@ export interface ConfigSyncSettings {
 	backup: BackupPolicy;
 	/** 启动时静默检查 Hub 版本 */
 	startupCheck: boolean;
+	/** 启动检查已经提醒过的 Hub 版本，避免同一版反复弹通知 */
+	updateNotifiedVersion: string;
 	/** 当前库配置变更后自动推送到 Hub */
 	autoPush: boolean;
 	autoPushDebounceMs: number;
@@ -198,6 +200,7 @@ export function defaultSettings(): ConfigSyncSettings {
 		pruneExtraneous: false,
 		backup: { enabled: true, keep: 10, scope: "full", deleteExtraneousOnRestore: false },
 		startupCheck: true,
+		updateNotifiedVersion: "",
 		autoPush: false,
 		autoPushDebounceMs: 3000,
 		periodicSyncMinutes: 0,
